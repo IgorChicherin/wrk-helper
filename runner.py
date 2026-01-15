@@ -79,11 +79,11 @@ def run_wrk_command(rps, connections, args: Namespace, file=None):
 
 
 def run_wrk_helper(args: Namespace):
-    files_before = os.listdir(".")
+    files_before = os.listdir(args.w)
 
     run_tests(args)
 
-    files_after = os.listdir(".")
+    files_after = os.listdir(args.w)
     new_reports = [
         file
         for file in files_after
