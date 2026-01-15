@@ -24,7 +24,7 @@ def run_tests(args: Namespace):
             f"{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}-{safe_url}-c{conn}.txt"
         )
 
-        if args.o:
+        if hasattr(args, "o"):
             output_file = args.o
 
         run_test(rps, conn, output_file, args)
