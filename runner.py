@@ -20,9 +20,10 @@ def run_tests(args: Namespace):
     safe_url = args.url.replace(":", "_").replace("/", "_").replace(".", "_")
 
     for conn in args.c:
-        
-        output_file = f"{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}-{safe_url}-c{conn}.txt"
-        
+        output_file = (
+            f"{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}-{safe_url}-c{conn}.txt"
+        )
+
         if args.o:
             output_file = args.o
 
@@ -91,9 +92,9 @@ def run_wrk_helper(args: Namespace):
     return new_reports
 
 
-def run_wrk_parser(new_reports):
+def run_wrk_parser(new_reports, work_dir: str = "."):
     for report in new_reports:
-        exec = f"{sys.executable} {os.path.dirname(os.path.abspath(sys.argv[0]))}/wrk_parser.py {report}"
+        exec = f"{sys.executable} {os.path.dirname(os.path.abspath(sys.argv[0]))}/wrk_parser.py {work_dir}/{report}"
 
         print("Running: ", exec)
 
@@ -148,11 +149,14 @@ def main():
         help="output file name",
     )
 
+    parser.add_argument("-w", type=str, default=".", help="work dir")
+
     args = parser.parse_args()
 
     new_reports = run_wrk_helper(args)
+
     if args.with_graph:
-        run_wrk_parser(new_reports)
+        run_wrk_parser(new_reports, work_dir=args.w)
 
 
 if __name__ == "__main__":
