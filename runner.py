@@ -79,11 +79,11 @@ def run_wrk_command(rps, connections, args: Namespace, file=None):
 
 
 def run_wrk_helper(args: Namespace):
-    files_before = os.listdir(args.w)
+    files_before = os.listdir(args.r)
 
     run_tests(args)
 
-    files_after = os.listdir(args.w)
+    files_after = os.listdir(args.r)
     new_reports = [
         file
         for file in files_after
@@ -92,9 +92,10 @@ def run_wrk_helper(args: Namespace):
     return new_reports
 
 
-def run_wrk_parser(new_reports, work_dir: str = "."):
+def run_wrk_parser(new_reports, work_dir: str = ".", reports_dir: str = "."):
+    work_dir = work_dir or os.path.dirname(os.path.abspath((sys.argv[0])))
     for report in new_reports:
-        exec = f"{sys.executable} {os.path.dirname(os.path.abspath(sys.argv[0]))}/wrk_parser.py {work_dir}/{report}"
+        exec = f"{sys.executable} {work_dir}/wrk_parser.py {reports_dir}/{report}"
 
         print("Running: ", exec)
 
@@ -149,14 +150,25 @@ def main():
         help="output file name",
     )
 
-    parser.add_argument("-w", type=str, default=".", help="work dir")
+    parser.add_argument(
+        "-r",
+        type=str,
+        default=os.path.dirname(os.path.abspath(sys.argv[0])),
+        help="reports dir",
+    )
 
+    parser.add_argument(
+        "-w",
+        type=str,
+        default=os.path.dirname(os.path.abspath(sys.argv[0])),
+        help="parser script dir",
+    )
     args = parser.parse_args()
 
     new_reports = run_wrk_helper(args)
 
     if args.with_graph:
-        run_wrk_parser(new_reports, work_dir=args.w)
+        run_wrk_parser(new_reports, work_dir=args.w, reports_dir=args.r)
 
 
 if __name__ == "__main__":
